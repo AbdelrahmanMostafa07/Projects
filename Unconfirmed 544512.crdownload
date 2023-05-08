@@ -1,0 +1,155 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[31]:
+
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import plotly.express as px
+
+
+# In[ ]:
+
+
+df = pd.read_csv('C:/Users/AmlaHardk/Desktop/Methane_final.csv')
+
+
+# # Data Preprocessing
+
+# 1. understand the dataset
+# 2. Remove unnecessary columns from data
+# 3. Add filters for selecting particular data for visualisation
+
+# In[3]:
+
+
+df.info()
+
+
+# In[4]:
+
+
+df = df.drop(columns = ['Unnamed: 0','notes'], inplace = True)
+
+
+# In[8]:
+
+
+df.head()
+
+
+# In[9]:
+
+
+df.describe()
+
+
+# In[12]:
+
+
+df.isnull().sum()
+
+
+# In[14]:
+
+
+temp = df
+temp=temp[(temp['region']!='World')&(temp['segment']!='Total')]
+
+
+# In[24]:
+
+
+sns.barplot(x='region',y='emissions',data=region)
+plt.xticks(rotation=90)
+plt.title('total emissions in every region')
+plt.show()
+
+
+# In[26]:
+
+
+seg=df.groupby('segment')[['emissions']].sum()[:11].reset_index()
+
+sns.barplot(x='segment',y='emissions',data=seg)
+plt.title('emissions by their segment')
+plt.xticks(rotation=90)
+plt.show()
+
+
+# In[27]:
+
+
+cntry=df.groupby('country')[['emissions']].sum().reset_index()
+cntry=cntry.sort_values(by='emissions',ascending=False)[1:11]
+cntry
+
+
+# In[30]:
+
+
+plt.figure(figsize=(15,6))
+sns.barplot(x='country',y='emissions',data=cntry)
+plt.title('countries with highest emission')
+plt.show()
+
+
+# In[32]:
+
+
+df.head()
+
+
+# In[37]:
+
+
+data = df
+year_emissions = data[data['country'] != 'World'].groupby('baseYear')['emissions'].sum()
+
+
+# In[42]:
+
+
+px.sunburst(temp,values='emissions',path=['region','segment'],color='region',width=700,height=700)
+
+
+# In[47]:
+
+
+px.pie(temp2,values='emissions',names='type',hole=0.5)
+
+
+# In[48]:
+
+
+data = df
+
+
+# In[49]:
+
+
+year_emissions = data[data['country'] != 'World'].groupby('baseYear')['emissions'].sum()
+
+# Sort year emissions in descending order, then get top 10
+top10_year_emissions = year_emissions.sort_values(ascending=False).head(10)
+
+# Plot bar chart for top 10 year emissions
+plt.figure(figsize=(12, 6))
+plt.bar(top10_year_emissions.index, top10_year_emissions.values, color=plt.cm.Paired(range(len(top10_year_emissions))))
+plt.xlabel('Year', fontsize=12)
+plt.ylabel('Emissions', fontsize=12)
+plt.title('Top 10 Years by Emissions (excluding World)', fontsize=16)
+plt.xticks(rotation=45)
+
+# Show the plot
+plt.show()
+
+
+# In[ ]:
+
+
+
+
